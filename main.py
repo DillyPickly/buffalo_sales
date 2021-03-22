@@ -10,7 +10,6 @@ from bokeh.themes import built_in_themes
 
 from utils.util import process_data
 from os.path import dirname, join
-from bokeh.embed import server_document
 
 # Process Data
 df = process_data(join(dirname(__file__), 'data', 'buffalo_assessment_2020-2021.csv'))
@@ -141,4 +140,3 @@ layout = layout(
 
 curdoc().add_root(layout)
 curdoc().title = "Visual"
-print(server_document("https://demo.bokeh.org/sliders"))
