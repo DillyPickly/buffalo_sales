@@ -1,8 +1,12 @@
 import pandas as pd
 import numpy as np
 
-def process_data(uri):
+# Call this function to process the original csv 
+def process_data():
     
+    orin_file = 'data/buffalo_assessment_2020-2021.csv'
+    new_file  = 'data/modified_buffalo_assessment_2020-2021.csv'
+
     def df_wgs84_to_web_mercator(df, lon="LONGITUDE", lat="LATITUDE"):
 
         k = 6378137
@@ -14,8 +18,9 @@ def process_data(uri):
         
         return df
 
+
     # Read Data
-    df = pd.read_csv(uri,sep=',',header=0,index_col=0)
+    df = pd.read_csv(orin_file,sep=',',header=0,index_col=0)
     # Filter Locations
     df = df.loc[df.loc[:,'LOCATION'].notnull(),:]
     # Create Mercator Coords
@@ -29,4 +34,14 @@ def process_data(uri):
     # Remove Low Sale Prices
     df = df.loc[(df.loc[:,'SALE PRICE'] > 10000),:]
 
+    df.to_csv(new_file)
+
     return df
+
+def load_data(uri):
+    df = pd.read_csv(uri,sep=',',header=0,index_col=0)
+    return df
+
+
+if __name__ == "__main__":
+    process_data()

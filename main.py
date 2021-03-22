@@ -8,10 +8,19 @@ from bokeh.models.formatters import NumeralTickFormatter
 from bokeh.palettes import Viridis256, Inferno256
 from bokeh.themes import built_in_themes
 
-from .helpers import process_data
+from .helpers import load_data
 from os.path import dirname, join
-# Process Data
-df = process_data(join(dirname(__file__), 'data', 'buffalo_assessment_2020-2021.csv'))
+
+# import time
+# import logging
+# start = time.time()
+# done = time.time()
+# logging.info("Process Data: {:.2f}s".format(done-start))
+
+
+# Load Data
+uri = join(dirname(__file__), 'data', 'modified_buffalo_assessment_2020-2021.csv')
+df = load_data(uri)
 
 # Initial Data
 x_range = (df['x'].min(),df['x'].max())
@@ -34,6 +43,7 @@ p = figure(x_range=x_range,
            aspect_ratio=.9,
            sizing_mode='scale_both',
            align='center',
+           output_backend="webgl",
 )
 p.add_tile(tile_provider)
 p.add_tools(HoverTool(
@@ -50,6 +60,7 @@ color_mapper = LinearColorMapper(palette=Viridis256 , low=10000, high=200000)
 formatter = NumeralTickFormatter(format='($ 0 a)')
 color_bar = ColorBar(color_mapper=color_mapper, label_standoff=12, formatter=formatter)
 p.add_layout(color_bar, 'right')
+
 
 # Add Points
 points = p.circle(
@@ -109,7 +120,7 @@ range_slider = RangeSlider(
     step=1,  # increments for the slider
     value=initial_date,  # initial values for slider
     )
-range_slider.on_change('value',range_slider_update)
+range_slider.on_change('value_throttled',range_slider_update)
 
 # Set up CheckboxGroup
 def checkbox_group_update(attrname):
