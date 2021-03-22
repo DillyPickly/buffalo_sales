@@ -11,8 +11,16 @@ from bokeh.themes import built_in_themes
 from utils.util import process_data
 from os.path import dirname, join
 
-# Process Data
-df = process_data(join(dirname(__file__), 'data', 'buffalo_assessment_2020-2021.csv'))
+# import time
+# import logging
+# start = time.time()
+# done = time.time()
+# logging.info("Process Data: {:.2f}s".format(done-start))
+
+
+# Load Data
+uri = join(dirname(__file__), 'data', 'modified_buffalo_assessment_2020-2021.csv')
+df = load_data(uri)
 
 # Initial Data
 x_range = (df['x'].min(),df['x'].max())
@@ -35,6 +43,7 @@ p = figure(x_range=x_range,
            aspect_ratio=.9,
            sizing_mode='scale_both',
            align='center',
+           output_backend="webgl",
 )
 p.add_tile(tile_provider)
 p.add_tools(HoverTool(
