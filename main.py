@@ -2,7 +2,7 @@ from bokeh.io import curdoc
 from bokeh.layouts import layout
 from bokeh.plotting import figure, output_file, show
 from bokeh.tile_providers import CARTODBPOSITRON_RETINA, ESRI_IMAGERY, get_provider
-from bokeh.models import ColumnDataSource, RangeSlider, Div, CheckboxButtonGroup, CustomJS, LinearColorMapper, ColorBar, CDSView, BooleanFilter
+from bokeh.models import ColumnDataSource, RangeSlider, Div, RadioButtonGroup, CustomJS, LinearColorMapper, ColorBar, CDSView, BooleanFilter
 from bokeh.models.tools import HoverTool, BoxZoomTool, ResetTool
 from bokeh.models.formatters import NumeralTickFormatter
 from bokeh.palettes import Viridis256, Inferno256
@@ -74,14 +74,13 @@ def update_data(start_year, end_year):
 
     df_temp = df[(df['DEED YEAR'] >= start_year) & (df['DEED YEAR'] <= end_year)]
 
-    if 0 not in checkboxbutton_group.active:
-        df_temp = df_temp[(df_temp['PROPERTY CLASS'] < 200) | (df_temp['PROPERTY CLASS'] >= 300)]
-    if 1 not in checkboxbutton_group.active:
-        df_temp = df_temp[(df_temp['PROPERTY CLASS'] < 300) | (df_temp['PROPERTY CLASS'] >= 400)]
-    if 2 not in checkboxbutton_group.active:
-        df_temp = df_temp[(df_temp['PROPERTY CLASS'] < 400) | (df_temp['PROPERTY CLASS'] >= 500)]
+    if radiobutton_group.active == 0:
+        df_temp = df_temp[(df_temp['PROPERTY CLASS'] >= 200) & (df_temp['PROPERTY CLASS'] < 300)]
+    elif radiobutton_group.active == 1:
+        df_temp = df_temp[(df_temp['PROPERTY CLASS'] >= 300) & (df_temp['PROPERTY CLASS'] < 400)]
+    elif radiobutton_group.active == 2:
+        df_temp = df_temp[(df_temp['PROPERTY CLASS'] >= 400) & (df_temp['PROPERTY CLASS'] < 500)]
 
-        
     source.data = ColumnDataSource.from_df(df_temp)
 
 # set up RangeSlider 
@@ -101,22 +100,22 @@ range_slider = RangeSlider(
 range_slider.on_change('value_throttled',range_slider_update)
 
 # Set up CheckboxButtonGroup
-def checkboxbutton_group_update(attrname):
+def radiobutton_group_update(attrname):
     start_year = range_slider.value[0]
     end_year   = range_slider.value[1]
     update_data(start_year, end_year)
 
 LABELS = ["Residential", "Vacant Land","Commercial"]
-default = [0]
-checkboxbutton_group = CheckboxButtonGroup(labels=LABELS, active=default, margin=(5,5,5,5))
-checkboxbutton_group.on_click(checkboxbutton_group_update)
+default = 0
+radiobutton_group = RadioButtonGroup(labels=LABELS, active=default, margin=(5,5,5,5))
+radiobutton_group.on_click(radiobutton_group_update)
 
 
 # create layout
 layout = layout(
     [
         [range_slider],
-        [checkboxbutton_group],
+        [radiobutton_group],
         [p],
     ],
     sizing_mode="stretch_width",
