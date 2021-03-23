@@ -8,7 +8,7 @@ from bokeh.models.formatters import NumeralTickFormatter
 from bokeh.palettes import Viridis256, Inferno256
 from bokeh.themes import built_in_themes
 
-from utils.util import process_data
+from utils.util import load_data
 from os.path import dirname, join
 
 # import time
@@ -119,7 +119,7 @@ range_slider = RangeSlider(
     step=1,  # increments for the slider
     value=initial_date,  # initial values for slider
     )
-range_slider.on_change('value',range_slider_update)
+range_slider.on_change('value_throttled',range_slider_update)
 
 # Set up CheckboxGroup
 def checkbox_group_update(attrname):
