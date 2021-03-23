@@ -27,6 +27,10 @@ def process_data():
 
     # Read Data
     df = pd.read_csv(orin_file,sep=',',header=0,index_col=0)
+
+    print('BEFORE: Number of rows   : ', df.shape[0])
+    print('BEFORE: Number of columns: ', df.shape[1])
+
     # Filter Locations
     df = df.loc[df.loc[:,'LOCATION'].notnull(),:]
     # Create Mercator Coords
@@ -39,7 +43,17 @@ def process_data():
     df = df.loc[(df.loc[:,'DEED YEAR'] > 1990),:]
     # Remove Low Sale Prices
     df = df.loc[(df.loc[:,'SALE PRICE'] > 10000),:]
+    # Remove property type other than residentail, vacant land, and commercial
+    df = df[df['PROPERTY CLASS'] < 500]
 
+    # Remove Columns ## we need 
+    # print(df.columns)
+    df = df[['x','y','DEED YEAR','PROPERTY CLASS','SALE PRICE','PROP CLASS DESCRIPTION','ADDRESS']]
+
+    print('AFTER: Number of rows   : ', df.shape[0])
+    print('AFTER: Number of columns: ', df.shape[1])
+
+    
     df.to_csv(new_file)
 
     return df

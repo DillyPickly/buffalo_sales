@@ -21,7 +21,6 @@ from os.path import dirname, join
 # Load Data
 uri = join(dirname(__file__), 'data', 'modified_buffalo_assessment_2020-2021.csv')
 df = load_data(uri)
-df = df[df['PROPERTY CLASS'] < 500]
 
 # Initial Data
 x_range = (df['x'].min(),df['x'].max())
@@ -81,16 +80,7 @@ def update_data(start_year, end_year):
         df_temp = df_temp[(df_temp['PROPERTY CLASS'] < 300) | (df_temp['PROPERTY CLASS'] >= 400)]
     if 2 not in checkboxbutton_group.active:
         df_temp = df_temp[(df_temp['PROPERTY CLASS'] < 400) | (df_temp['PROPERTY CLASS'] >= 500)]
-    # if 3 not in checkboxbutton_group.active:
-    #     df_temp = df_temp[(df_temp['PROPERTY CLASS'] < 500) | (df_temp['PROPERTY CLASS'] >= 600)]
-    # if 4 not in checkboxbutton_group.active:
-    #     df_temp = df_temp[(df_temp['PROPERTY CLASS'] < 600) | (df_temp['PROPERTY CLASS'] >= 700)]
-    # if 5 not in checkboxbutton_group.active:
-    #     df_temp = df_temp[(df_temp['PROPERTY CLASS'] < 700) | (df_temp['PROPERTY CLASS'] >= 800)]
-    # if 6 not in checkboxbutton_group.active:
-    #     df_temp = df_temp[(df_temp['PROPERTY CLASS'] < 800) | (df_temp['PROPERTY CLASS'] >= 900)]
-    # if 7 not in checkboxbutton_group.active:
-    #     df_temp = df_temp[(df_temp['PROPERTY CLASS'] < 900) | (df_temp['PROPERTY CLASS'] >= 1000)]
+
         
     source.data = ColumnDataSource.from_df(df_temp)
 
@@ -116,7 +106,7 @@ def checkboxbutton_group_update(attrname):
     end_year   = range_slider.value[1]
     update_data(start_year, end_year)
 
-LABELS = ["Residential", "Vacant Land","Commercial"] #,"Entertainment","Community Services","Industrial","Public Services","Parks"]
+LABELS = ["Residential", "Vacant Land","Commercial"]
 default = [0]
 checkboxbutton_group = CheckboxButtonGroup(labels=LABELS, active=default, margin=(5,5,5,5))
 checkboxbutton_group.on_click(checkboxbutton_group_update)
