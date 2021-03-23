@@ -2,7 +2,7 @@ from bokeh.io import curdoc
 from bokeh.layouts import layout
 from bokeh.plotting import figure, output_file, show
 from bokeh.tile_providers import CARTODBPOSITRON_RETINA, ESRI_IMAGERY, get_provider
-from bokeh.models import ColumnDataSource, RangeSlider, Div, CheckboxGroup, CustomJS, LinearColorMapper, ColorBar, CDSView, BooleanFilter
+from bokeh.models import ColumnDataSource, RangeSlider, Div, CheckboxButtonGroup, CustomJS, LinearColorMapper, ColorBar, CDSView, BooleanFilter
 from bokeh.models.tools import HoverTool, BoxZoomTool, ResetTool
 from bokeh.models.formatters import NumeralTickFormatter
 from bokeh.palettes import Viridis256, Inferno256
@@ -21,6 +21,7 @@ from os.path import dirname, join
 # Load Data
 uri = join(dirname(__file__), 'data', 'modified_buffalo_assessment_2020-2021.csv')
 df = load_data(uri)
+df = df[df['PROPERTY CLASS'] < 500]
 
 # Initial Data
 x_range = (df['x'].min(),df['x'].max())
@@ -70,38 +71,26 @@ points = p.circle(
     size=5,
 )
 
-# set up Text Area (div)
-div = Div(
-    text="""
-          <h2>A Visualization of Property Sales in Buffalo, NY</h2>
-          <h3>City of Buffalo -- 2020-2021 Assesment Roll </h3>
-          <p>This data consists of the mpst recent sale of all buffalo properties. </p>
-          """,
-    width=200,
-    height=30,
-    align='center',
-)
-
 def update_data(start_year, end_year):
 
     df_temp = df[(df['DEED YEAR'] >= start_year) & (df['DEED YEAR'] <= end_year)]
 
-    if 0 not in checkbox_group.active:
+    if 0 not in checkboxbutton_group.active:
         df_temp = df_temp[(df_temp['PROPERTY CLASS'] < 200) | (df_temp['PROPERTY CLASS'] >= 300)]
-    if 1 not in checkbox_group.active:
+    if 1 not in checkboxbutton_group.active:
         df_temp = df_temp[(df_temp['PROPERTY CLASS'] < 300) | (df_temp['PROPERTY CLASS'] >= 400)]
-    if 2 not in checkbox_group.active:
+    if 2 not in checkboxbutton_group.active:
         df_temp = df_temp[(df_temp['PROPERTY CLASS'] < 400) | (df_temp['PROPERTY CLASS'] >= 500)]
-    if 3 not in checkbox_group.active:
-        df_temp = df_temp[(df_temp['PROPERTY CLASS'] < 500) | (df_temp['PROPERTY CLASS'] >= 600)]
-    if 4 not in checkbox_group.active:
-        df_temp = df_temp[(df_temp['PROPERTY CLASS'] < 600) | (df_temp['PROPERTY CLASS'] >= 700)]
-    if 5 not in checkbox_group.active:
-        df_temp = df_temp[(df_temp['PROPERTY CLASS'] < 700) | (df_temp['PROPERTY CLASS'] >= 800)]
-    if 6 not in checkbox_group.active:
-        df_temp = df_temp[(df_temp['PROPERTY CLASS'] < 800) | (df_temp['PROPERTY CLASS'] >= 900)]
-    if 7 not in checkbox_group.active:
-        df_temp = df_temp[(df_temp['PROPERTY CLASS'] < 900) | (df_temp['PROPERTY CLASS'] >= 1000)]
+    # if 3 not in checkboxbutton_group.active:
+    #     df_temp = df_temp[(df_temp['PROPERTY CLASS'] < 500) | (df_temp['PROPERTY CLASS'] >= 600)]
+    # if 4 not in checkboxbutton_group.active:
+    #     df_temp = df_temp[(df_temp['PROPERTY CLASS'] < 600) | (df_temp['PROPERTY CLASS'] >= 700)]
+    # if 5 not in checkboxbutton_group.active:
+    #     df_temp = df_temp[(df_temp['PROPERTY CLASS'] < 700) | (df_temp['PROPERTY CLASS'] >= 800)]
+    # if 6 not in checkboxbutton_group.active:
+    #     df_temp = df_temp[(df_temp['PROPERTY CLASS'] < 800) | (df_temp['PROPERTY CLASS'] >= 900)]
+    # if 7 not in checkboxbutton_group.active:
+    #     df_temp = df_temp[(df_temp['PROPERTY CLASS'] < 900) | (df_temp['PROPERTY CLASS'] >= 1000)]
         
     source.data = ColumnDataSource.from_df(df_temp)
 
@@ -121,24 +110,23 @@ range_slider = RangeSlider(
     )
 range_slider.on_change('value_throttled',range_slider_update)
 
-# Set up CheckboxGroup
-def checkbox_group_update(attrname):
+# Set up CheckboxButtonGroup
+def checkboxbutton_group_update(attrname):
     start_year = range_slider.value[0]
     end_year   = range_slider.value[1]
     update_data(start_year, end_year)
 
-LABELS = ["Residential", "Vacant Land","Commercial","Entertainment","Community Services","Industrial","Public Services","Parks"]
+LABELS = ["Residential", "Vacant Land","Commercial"] #,"Entertainment","Community Services","Industrial","Public Services","Parks"]
 default = [0]
-checkbox_group = CheckboxGroup(labels=LABELS, active=default, margin=(5,5,5,5), inline=True)
-checkbox_group.on_click(checkbox_group_update)
+checkboxbutton_group = CheckboxButtonGroup(labels=LABELS, active=default, margin=(5,5,5,5))
+checkboxbutton_group.on_click(checkboxbutton_group_update)
 
 
 # create layout
 layout = layout(
     [
-        [div],
         [range_slider],
-        [checkbox_group],
+        [checkboxbutton_group],
         [p],
     ],
     sizing_mode="stretch_width",
