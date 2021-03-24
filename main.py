@@ -3,7 +3,7 @@ from bokeh.layouts import layout
 from bokeh.plotting import figure, output_file, show
 from bokeh.tile_providers import CARTODBPOSITRON_RETINA, ESRI_IMAGERY, get_provider
 from bokeh.models import ColumnDataSource, RangeSlider, Div, RadioButtonGroup, CustomJS, LinearColorMapper, ColorBar, CDSView, BooleanFilter
-from bokeh.models.tools import HoverTool, BoxZoomTool, ResetTool
+from bokeh.models.tools import HoverTool, PanTool, ResetTool, WheelZoomTool
 from bokeh.models.formatters import NumeralTickFormatter
 from bokeh.palettes import Viridis256, Inferno256
 from bokeh.themes import built_in_themes
@@ -44,8 +44,17 @@ p = figure(x_range=x_range,
            sizing_mode='scale_both',
            align='center',
            output_backend="webgl",
+           tools=[]
 )
 p.add_tile(tile_provider)
+
+# Customize toolbar
+# activate toolbar autohide
+p.toolbar.autohide = True
+p.toolbar.logo = None
+p.add_tools(PanTool())
+p.add_tools(ResetTool())
+p.add_tools(WheelZoomTool())
 p.add_tools(HoverTool(
     tooltips=[
         ( 'Year Sold','@{DEED YEAR}' ),
@@ -53,6 +62,7 @@ p.add_tools(HoverTool(
         ( 'Property Type', '@{PROP CLASS DESCRIPTION}'),
         ( 'Address', '@{ADDRESS}'),
     ],
+    
 ))
 
 # create linear color mapper and color bar
