@@ -1,5 +1,6 @@
 # Remove modified data
 data/modified*
+nohup.out
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
